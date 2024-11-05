@@ -1,0 +1,120 @@
+---
+title: "lab3"
+output: html_document
+date: "2024-01-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+
+
+```{r}
+# Funkcja symulująca rzuty monetą do momentu uzyskania dwóch orłów z rzędu
+toss <- function() {
+  k <- 0
+  onehead <- FALSE
+  repeat {
+    k <- k + 1
+    rzut <- sample(c("O", "R"), 1)
+    if (rzut == "O") {
+      if (onehead == TRUE) {
+        break
+      } else {
+        onehead <- TRUE
+      }
+    } else {
+      onehead <- FALSE
+    }
+  }
+  return(k)
+}
+
+# Liczba powtórzeń eksperymentu
+N <- 10000
+
+# Symulacja N eksperymentów
+rzuty <- replicate(N, toss())
+
+# Obliczenie empirycznych prawdopodobieństw dla k = 2, ..., 8
+empirical_probabilities <- numeric(7)
+for (i in 2:8) {
+  empirical_probabilities[i-1] <- length(which(rzuty == i))/N
+}
+
+# Wyświetlenie wyników
+empirical_probabilities
+
+
+```
+
+## Zadanie 2.
+
+```{r}
+v <-rbinom(100, 1, 0.9)
+v
+prawd <- length(which(v == 1))/100
+prawd
+```
+
+Porównac wyznaczona empirycznie najbardziej prawdopodobna liczbe sukcesów z ta, która wynika ze wzoru definiujacego
+rozkład dwumianowy
+
+```{r}
+N<-1e6
+n<-11
+p<-0.5
+x<-rbinom(N,size=n,p)
+x<-factor(x)
+print(x)
+y<-tabulate(x)
+levels(x)[y == max(y)]
+theo<-dbinom(c(0:n),n,p)
+which(theo==max(theo))-1
+```
+
+## Zadanie 3.
+1.
+```{r}
+
+
+toss<-function(p){
+  x<-0
+  while(TRUE){
+    rzut<-sample(c("O","R"),1,replace = TRUE,prob = c(p,1-p))
+    x<-x+1
+    if(rzut=="O"){
+      return(x)
+    }
+  }
+}
+
+p <- 0.3
+k <- 5
+n <- 1000
+
+rzuty<-replicate(n,toss(p))
+
+p_k<-length(which(rzuty>k))/1000000
+p_kl<-sapply(1:10,function(x) length(which(rzuty>k+x)))/length(which(rzuty>k))
+#empiryczne
+p_kl
+#teoretyczne
+sapply(1:10, function(l) pgeom(l + k, p, lower.tail = FALSE) / pgeom(k, p, lower.tail = FALSE))
+```
+
+2. 
+
+```{r}
+n<-10
+x<-rbinom(10,3,0.5)
+
+print(x)
+y<-which(x==2)
+print(y)
+```
+
+

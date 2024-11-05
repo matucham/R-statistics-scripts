@@ -1,0 +1,195 @@
+---
+title: "lab10"
+output: html_document
+date: "2024-01-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+```{r}
+
+#liczba próbek
+n <- 1e3
+#generowanie różnych par puntków
+x <- runif(n, -1, 1)
+y <- runif(n,-1,1)
+D <- c()
+dist <- c()
+
+#warunek sprawdzający
+for(i in 1:n){
+  if((x[i])^2 + (y[i])^2 <= 1){
+    operacja <- sqrt((x[i])^2 + (y[i])^2)
+    dist <- append(dist, operacja)
+  }
+}
+#średnia ze zliczonych odległości
+mean(dist)
+
+```
+
+## Zadanie 2
+
+
+```{r}
+#1
+n <- 1e2
+x <- runif(n)
+y <- runif(n)
+D <- matrix(0, ncol = 2, nrow = 0)
+
+for (i in 1:n) {
+  if (x[i] >= 0 & y[i] >= 0 & x[i] + y[i] <= 1) {
+    D <- rbind(D, c(x[i], y[i]))
+  }
+}
+
+
+
+# Histogram dla x
+hist(D[, 1], main = "Histogram dla x", xlab = "x", col = "lightblue")
+
+# Histogram dla y
+hist(D[, 2], main = "Histogram dla y", xlab = "y", col = "lightgreen")
+
+
+# Średnie dla x i y
+srednia_x <- mean(D[, 1])
+srednia_y <- mean(D[, 2])
+
+cat("Średnia dla x:", srednia_x, "\n")
+cat("Średnia dla y:", srednia_y, "\n")
+prawdopodobienstwo_d1 <- nrow(D) / n
+
+cat("Prawdopodobieństwo dla obszaru 1:", prawdopodobienstwo_d1, "\n")
+
+#2
+
+n <- 1e2
+x <- runif(n)
+y <- runif(n)
+D <- matrix(0, ncol = 2, nrow = 0)
+
+for (i in 1:n) {
+  if (x[i] >= 0 & x[i] <= 1 & y[i] >= 0 & y[i] <= 1 & y[i] <=x[i]) {
+    D <- rbind(D, c(x[i], y[i]))
+  }
+}
+
+
+
+# Histogram dla x
+hist(D[, 1], main = "Histogram dla x", xlab = "x", col = "lightblue")
+
+# Histogram dla y
+hist(D[, 2], main = "Histogram dla y", xlab = "y", col = "lightgreen")
+
+
+# Średnie dla x i y
+srednia_x <- mean(D[, 1])
+srednia_y <- mean(D[, 2])
+
+cat("Średnia dla x:", srednia_x, "\n")
+cat("Średnia dla y:", srednia_y, "\n")
+prawdopodobienstwo_d2 <- nrow(D) / n
+
+cat("Prawdopodobieństwo dla obszaru 2:", prawdopodobienstwo_d2, "\n")
+
+#3
+n <- 1e2
+x <- runif(n)
+y <- runif(n)
+D <- matrix(0, ncol = 2, nrow = 0)
+
+for (i in 1:n) {
+  if (abs(x[i]) + abs(y[i]) <= 1) {
+    D <- rbind(D, c(x[i], y[i]))
+  }
+}
+
+
+
+# Histogram dla x
+hist(D[, 1], main = "Histogram dla x", xlab = "x", col = "lightblue")
+
+# Histogram dla y
+hist(D[, 2], main = "Histogram dla y", xlab = "y", col = "lightgreen")
+
+
+# Średnie dla x i y
+srednia_x <- mean(D[, 1])
+srednia_y <- mean(D[, 2])
+
+cat("Średnia dla x:", srednia_x, "\n")
+cat("Średnia dla y:", srednia_y, "\n")
+
+prawdopodobienstwo_d3 <- nrow(D) / n
+
+cat("Prawdopodobieństwo dla obszaru 3:", prawdopodobienstwo_d3, "\n")
+
+
+```
+
+
+#Zadanie 3.
+Schemat rozwiazania przeze mnie zadania:
+Z rozkladu poisona generuje ile dla kazdej proby(np.dla kazdej godziny) przejechalo przez ulicę samochodów, następnie dla każdego przejeżdzającego auta generujemy indywidualne prawdopodobienstwo zlapania i sprawdzamy, czy zostal on zlapany. Jesli tak zliczamy to auto i wpisujemy ile aut dla danej godziny zostało zlapanych. Koncowo patrzymy histogram, który prezentuje rozkład zlapania auta w ciagu godziny.Wykres przedstawia, ile aut(y) dla danej godziny(x) zostało złapanych.
+
+```{r}
+
+n <- 100
+
+ile_zlapanych <- numeric(n)
+
+#ile aut dla danej próby przejechało
+n_aut <- rpois(n,5)
+#Ile aut w danej próbie było złapanych(każdy samochod inne prawd. zlapania) 
+
+for(i in 1:length(n_aut)){
+      zlapany <- 0
+  for(j in 1:n_aut[i]){
+    n_p <- runif(1)
+    czy_zlapany <- rbinom(1,1,n_p)
+    if(czy_zlapany == 1){
+      zlapany <- zlapany + 1
+    }
+  }
+  ile_zlapanych[i] <- zlapany 
+}
+n_aut
+ile_zlapanych
+hist(ile_zlapanych)
+plot(1:n, ile_zlapanych)
+```
+
+
+
+
+## Zadanie 4.
+
+```{r}
+
+n <- 1e2
+u <- runif(n)
+v <- numeric(n)
+
+D <- matrix(0, ncol = 2, nrow = 0)
+
+for (i in 1:n) {
+v[i] <- runif(1, 0, u[i])
+D <- rbind(D, c(u[i], v[i]))
+}
+D
+
+#rozklad dla V
+x <- seq(0, 10, length = 1000)
+y <- D[,2]
+
+hist(D[,2], breaks = 31)
+hist(D[,1], breaks = 31)
+
+```

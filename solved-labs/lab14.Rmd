@@ -1,0 +1,71 @@
+---
+title: "lab14"
+output: html_document
+date: "2024-01-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+skoki - wzrost liczby zdarzeń po każdym przybyciu. Skoki są utworzone jako sekwencja od 0 do N, gdzie N to liczba przybyć. Te skoki są używane później do stworzenia wykresu procesu Poissona.
+
+arrivals_time - zmienna przechowuje chwile przybyć, które są wygenerowane z rozkładu jednostajnego na przedziale (0, 20). 
+
+średnia liczba zdarzeń w jednostce czasu(mamy 20 jednostek czasu, a intesywnosc 0.5, stąd średnia liczba zdarzeń to 10)
+
+```{r}
+#1
+
+# Liczba przybyć z rozkładu Poissona
+N <- rpois(1, 20 * 0.5)
+
+# (Przybycia)N wartości losowych z rozkładu jednostajnego na (0, t); t=20
+arrivals_time <- sort(c(0, runif(N, 0, 20)))
+
+# Skoki
+steps <- c(0, seq(1:N))
+
+N
+steps
+arrivals_time
+# Wykres
+plot(arrivals_time, steps, type = "s", xlab = "Czas", ylab = "Liczba przybyć", main = "Proces Poissona")
+
+#2
+# funkcja generująca jedną realizację procesu Poissona i sprawdza, ile z tych przybyć miało miejsce przed czasem 10. Funkcja ta zwraca 1, jeśli liczba przybyć dla t < 10 wynosi i
+  # Liczba przybyć z rozkładu Poissona; t = 20, lambda = 1/2
+  N <- rpois(1, 20 * 0.5)
+
+  # N wartości losowych z rozkładu jednostajnego na (0, t); t=20 - chwile przybyć
+  arrivals_time <- sort(c(runif(N, 0, 20)))
+
+  # Skoki
+  steps <- c(0, seq(1:N))
+
+  # Czasy przybyć dla t < 10
+  arrivals_time_less_10 <- arrivals_time[arrivals_time < 10]
+
+  # Warunek sprawdzający, czy liczba przybyć dla t < 10 wynosi i
+  if (length(arrivals_time_less_10) == i) {
+    return(1)
+  } else {
+    return(0)
+  }
+}
+
+cat("Wartości empiryczne: \n")
+for (i in seq(1, 9)) {
+  cat("P(N10 = ", i, ")=", sum(replicate(10000, poiss_proc10(i))) / 10000, "\n")
+}
+
+cat("Wartości teoretyczne: \n")
+for (i in seq(1, 9)) {
+  cat("P(N10 = ", i, ")=", dpois(i, 0.5 * 10), "\n")
+}
+
+```
+
+

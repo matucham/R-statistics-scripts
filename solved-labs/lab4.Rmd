@@ -1,0 +1,205 @@
+---
+title: "lab4"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-01-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+```{r}
+# Funkcja generująca próbki z rozkładu dwupunktowego
+generate_binary_sample <- function(n) {
+  sample(c(1, 2), n, replace = TRUE)
+}
+
+# Próby o różnych wielkościach
+sample_sizes <- c(5, 10, 102, 103, 106)
+
+# Narysowanie wykresów dystrybuant empirycznych
+
+for (n in sample_sizes) {
+  sample_data <- generate_binary_sample(n)
+  plot(ecdf(sample_data), main = paste("n =", n), xlab = "x", ylab = "Fn(x)")
+}
+
+```
+
+
+```{r}
+# Funkcja symulująca rzuty monetą do uzyskania orła
+toss_until_heads <- function() {
+  n <- 0
+  repeat {
+    rzut <- sample(c("O", "R"), 1, replace = TRUE)
+    n <- n + 1
+    if (rzut == "O") {
+      break
+    }
+  }
+  return(n)
+}
+
+# Liczba powtórzeń eksperymentu
+N <- c(1e2, 1e6)
+
+# Narysowanie wykresów dystrybuant empirycznych
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+for (n in N) {
+  toss_results <- replicate(n, toss_until_heads())
+  plot(ecdf(toss_results), main = paste("N =", n), xlab = "x", ylab = "Fn(x)")
+}
+
+```
+
+```{r}
+# Losowanie z rozkładu jednostajnego i prawdopodobieństwa geometrycznego
+v1_3 <- runif(1e3)
+v1_3_2 <- rgeom(1e3, 0.5)
+
+# Narysowanie wykresów dystrybuant empirycznych
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+plot(ecdf(v1_3), main = "Rozkład jednostajny", xlab = "x", ylab = "Fn(x)")
+plot(ecdf(v1_3_2), main = "Rozkład geometryczny", xlab = "x", ylab = "Fn(x)")
+
+```
+
+
+## Zadanie 2.
+
+```{r}
+for (i in 1:5) {
+  wektor <- rpois(1e2, i)  
+  srednia <- mean(wektor)  
+  hist(wektor, breaks = seq(min(wektor), max(wektor)))  
+}
+
+# Obliczenie funkcji masy prawdopodobieństwa dla Poissona
+ppois(0:10, lambda = 5)
+
+# Wnioski:
+# - Wartość parametru lambda wpływa na kształt histogramu, ogony oraz średnią próbki.
+# - Im większa wartość lambda, tym ogony są węższe, a próbki bardziej skoncentrowane wokół średniej wartości lambdy.
+# - Średnia próbki z rozkładu Poissona wynosi lambda, co oznacza, że zależy od wartości parametru.
+
+# 2. Stworzenie macierzy porównawczej dla rozkładu binom(n, p) i Poisson(np)
+n <- 1e1
+p <- 0.5
+
+X <- numeric(n)
+Y <- numeric(n)
+Z <- numeric(n)
+
+for (i in 1:n) {
+  X[i] <- dbinom(i, n, p)  # Prawdopodobieństwo dla rozkładu binom(n, p)
+  Y[i] <- dpois(i, n * p)  # Prawdopodobieństwo dla rozkładu Poisson(np)
+  Z[i] <- X[i] - Y[i]  # Różnica między prawdopodobieństwami
+}
+
+dane = c(X, Y, Z)
+
+macierz <- matrix(dane, ncol = 3, byrow = FALSE)  # Stworzenie macierzy
+macierz
+
+# Obliczenie  modułu z trzeciej kolumny za pomocą funkcji abs
+modul <- abs(Z)
+modul
+
+# Wnioski:
+# - Macierz porównawcza pozwala na analizę różnic między rozkładem binom(n, p) a Poisson(np).
+# - Moduł z różnic pozwala określić, jak bardzo różnią się prawdopodobieństwa dla danego zakresu.
+
+# 3. Stworzenie macierzy porównawczej dla różnych parametrów i wartości n
+# (n = 10, p = 0.9, a = 0, b = 10), (n = 100, p = 0.9, a = 0, b = 100), (n = 1000, p = 0.001, a = 0, b = 100)
+n <- 10
+p <- 0.9
+
+for (i in 1:11) {
+  X[i] <- dbinom(i, n, p)
+  Y[i] <- dpois(i, n * p)
+  Z[i] <- X[i] - Y[i]
+}
+macierz2 <- matrix(c(X, Y, Z), ncol = 3, byrow = FALSE) 
+macierz2
+abs(Z)
+
+# Wnioski:
+# - Porównanie dla różnych wartości n, p i zakresu (a, b) pozwala na analizę różnic między rozkładem binom(n, p) a Poisson(np).
+
+
+```
+
+## Zadanie 3.
+
+1.Wygenerowac próbki z rozkładu wykładniczego z róznymi parametrami. Obejrzec histogramy. Ocenic
+wpływ parametru lambda na kształt histogramu. Ocenic wielkosc ogonów. Jak duze (srednio) sa elementy
+próbki w zaleznosci od lambda?
+
+```{r}
+# Ustalenie różnych wartości lambdy
+lambdas <- c(0.5, 1, 2, 5)
+
+# Ustalenie liczby próbek
+num_samples <- 1000
+
+# Wygenerowanie próbki z rozkładu wykładniczego dla różnych lambd
+samples <- list()
+histograms <- list()
+mean_values <- numeric()
+
+
+for (lambda in lambdas) {
+  sample <- rexp(num_samples, rate=lambda)
+  samples[[as.character(lambda)]] <- sample
+  mean_values <- c(mean_values, mean(sample))
+  
+  # Narysowanie histogramu
+  hist(sample, main=paste("Histogram (lambda =", lambda, ")"), xlab="Wartość próbki", ylab="Częstotliwość")
+  
+  # Obliczenie ogonów (kwantyle)
+  quantiles <- quantile(sample, c(0.01, 0.99))
+  print(paste("Lambda =", lambda, ", 1% quantile =", quantiles[1], ", 99% quantile =", quantiles[2]))
+}
+
+# Wyświetlenie średniej wartości próbek w zależności od lambdy
+print("Średnie wartości próbek w zależności od lambdy:")
+for (i in 1:length(lambdas)) {
+  print(paste("Lambda =", lambdas[i], ", Średnia =", mean_values[i]))
+}
+
+```
+
+
+
+2. 
+
+```{r}
+# Symulacja oczekiwania na autobusy przez Asię i Basię
+lambda <- 1/30  # Parametr rozkładu wykładniczego
+
+wyniki <- numeric(1e2)  # Inicjalizacja wektora na wyniki
+
+for (i in 1:1e2) {
+  autobus <- rexp(2, lambda)  # Generowanie odstępów między autobusami
+  autobus_up <- sort(autobus)  # Sortowanie odstępów rosnąco
+  
+  asia <- autobus_up[1]  # Czas oczekiwania Asi
+  basia <- asia + 10  # Czas oczekiwania Basi (10 minut po Asi)
+  
+  # Obliczenia różnic między czasami oczekiwania
+  roznica2 <- abs(asia - autobus_up[2])  # Różnica dla Asi
+  roznica3 <- abs(basia - autobus_up[2])  # Różnica dla Basi
+  
+  # Wybór, kto czekał dłużej
+  wyniki[i] <- ifelse(roznica2 < roznica3, "Asia", "Basia")
+}
+
+# Wyświetlenie wyników
+wyniki
+
+```

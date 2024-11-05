@@ -1,0 +1,103 @@
+---
+title: "lab6"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-01-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+
+```{r}
+mu <- c(-2, 4, 6)
+sigma <- c(3:5)
+
+hist(rnorm(1e3, mean = -2, sd = 3))
+hist(rnorm(1e3, mean =  4, sd = 4))
+hist(rnorm(1e3, mean =  6, sd = 5))
+
+# Krótkie ogony oznaczają niskie prawdopodobieństwo uzyskania skrajnych wartości,
+# a wysokie prawdopodobieństwo wartości bliskich średniej.
+
+# 2. Tworzenie wektora x i przekształcanie go do wektora y
+n <- 1e3
+x <- rnorm(n, 5, 2)
+a <- c(-3:3)
+results <- numeric(length(a))
+
+y <- (x - 5) / 2
+for (i in 1:length(a)) {
+  results[i] <- length(which(y <= a[i])) / n
+}
+
+results
+
+# 3. Powtórzenie kroków dla trzech wybranych par
+
+```
+
+
+## Zadanie 2,
+1. 
+
+```{r}
+n <- 1e2
+success <- 0
+P <- rnorm(n, 0, 1)
+for(i in 1:n){
+  if(P[i] < 1 && P[i] > -1){ success <- success + 1}
+}
+success/n
+
+```
+2.
+```{r}
+n <- 1e2
+success <- 0
+P <- rnorm(n, 0, 1)
+for(i in 1:n){
+  if(P[i] < 2 && P[i] > -2){ success <- success + 1}
+}
+success/n
+
+
+```
+3.
+```{r}
+n <- 1e2
+success <- 0
+P <- rnorm(n, 0, 1)
+for(i in 1:n){
+  if(P[i] < 3 && P[i] > -3){ success <- success + 1}
+}
+success/n
+
+```
+Jest to reguła trzech sigm, która mówi o tym, że jeśli od punktu wynoszącego srednia przesuniemy sie o 1, 2 lub 3 sigmy to prawdopodobienstwo wylosowania liczby z danego przeddzialu bedzie wyniosilo tyle ile zostalo to wyliczone przez R.
+
+## Zadanie 3.
+```{r}
+
+# Rysowanie empirycznej dystrybuanty dla porównania
+plot.ecdf(rnorm(1e2, 0, 1))
+
+
+# Funkcja f(t) to gęstość prawdopodobieństwa rozkładu normalnego.
+# Całkowanie  funkcji f od minus nieskończoności do x daje wartość dystrybuanty w punkcie x.
+
+wart_dystr <- function(x, mn, sigma) {
+  f <- function(t) {
+    (1 / (sqrt(2 * pi) * sigma)) * exp(-((t - mn)^2 / (2 * sigma^2)))
+  }
+  integrate(f, lower = -Inf, upper = x)
+}
+
+wart_dystr(0, 0, 1)
+
+```
+

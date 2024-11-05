@@ -1,0 +1,386 @@
+---
+title: "lab8"
+output: html_document
+date: "2024-01-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+1.
+```{r}
+curve(dcauchy(x), col = 'red', to = 10)
+curve(dnorm(x), add = T, col = 'yellow', to = 10)
+?curve
+
+```
+2.
+```{r}
+n <- 10^4
+normalny <- rnorm(n)
+nor_m <- c()
+cauchego <- rcauchy(n)
+
+rys_norm <- function(liczba, przedzialy) {
+  no_m <- numeric(0)
+
+  for (i in 1:n) {
+    if (abs(normalny[i]) <= liczba) {
+      no_m <- append(no_m, abs(normalny[i]))
+    }
+  }
+
+  hist(no_m, breaks = seq(min(no_m), max(no_m), length.out = przedzialy + 1), freq = FALSE, col = 'gray',main = "próbki < zadana liczba dla normalnego")
+}
+
+# Przykładowe użycie funkcji
+rys_norm(5, 30)
+
+
+rys_cau <- function(liczba, przedzialy) {
+  no_cau <- numeric(0)  #
+
+  for (i in 1:n) {
+    if (abs(cauchego[i]) <= liczba) {
+      no_cau <- append(no_cau, abs(cauchego[i]))
+    }
+  }
+
+  hist(no_cau, breaks = seq(min(no_cau), max(no_cau), length.out = przedzialy + 1), freq = FALSE, col = 'lightblue',main = "próbki < zadana liczba dla cauchego")
+}
+
+# Przykładowe użycie funkcji
+rys_cau(5,30)
+
+
+
+```
+
+
+4.
+```{r}
+n <- 1e3
+cauchy4 <- rcauchy(n)
+norm4 <- rnorm(n)
+u <- seq(from = 0, to = 10, by = 0.01)
+znaleziono <- numeric(0)
+
+for (i in u) {
+  prawdcau <- length(which(abs(cauchy4) < i)) / n  
+  prawdnorm <- length(which(abs(norm4) < i)) / n    
+  
+  if (prawdcau > prawdnorm) {
+    znaleziono <- append(znaleziono, i)
+  }
+}
+
+if (length(znaleziono) > 0) {
+  cat("Znaleziono u, dla którego P(|Y| < u) > P(|X| < u):", znaleziono)
+} else {
+  cat("Nie znaleziono takiego u")
+}
+
+
+```
+
+## Zadanie 2.
+
+```{r}
+N <- 10^3
+proby <- sample(c(-1,0, 1), N, replace = T)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukanie wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+```
+
+1b.
+
+```{r}
+N <- 10^3
+proby <- sample(c(-1000:1000), N, replace = T)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukanie wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+
+
+```
+
+2.
+
+```{r}
+N <- 10^3
+proby <- runif(N, -1, 1)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukanie wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+
+```
+
+
+
+
+
+2b.
+
+
+```{r}
+N <- 10^3
+proby <- runif(N, -1000,1000)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukamy wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+```
+
+3.
+
+```{r}
+#1
+N <- 10^3
+proby <- rnorm(N)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukanie wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+#2
+
+N <- 10^3
+proby <- rnorm(N, 1000)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukanie wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+
+```
+Dla każdego rozkładu odchylenia na samym starcie są największe, a później funkcja się normuje. Dla większych wartości w rozkładach, zwiększają się odchylenia(szczególnie na starcie).
+
+
+# Zadanie 3.
+To samo co 2. tylko, że Cauchy
+
+
+```{r}
+
+N <- 10^3
+proby <- rcauchy(N)
+
+srednia <- mean(proby)
+proby
+srednia
+#szukamy wartosci dla roznych rozmiarow wektora i zapisujemy je w tablice gdzie indeks to dlugosc wektora
+tablica <- numeric(n)
+
+
+for(k in 1:N){
+tablica[k] <- ((cumsum(proby)[k])/k - srednia) 
+}
+#w tablicy sa wartosci, a k to argumenty 
+plot(1:N, tablica)
+
+
+```
+
+Dla rozkładu cauchego uzyskujemy nieregularność jeśli chodzi o odchylenia.
+
+
+# Zadanie 4.
+1.
+```{r}
+N <- 10^4
+n <- 100
+eps <- 1/100 
+succ <- numeric(0)
+
+for (i in 1:N) {
+  prawd <- abs((sum(sample(-1:1, n, replace = TRUE))/n - mean(sample(-1:1, n, replace = TRUE))))
+  if (prawd < eps) {
+    succ <- append(succ, 1)
+  }
+}
+
+prawdopodobienstwo <- length(succ)/N
+prawdopodobienstwo
+
+```
+1b
+```{r}
+N <- 10^4
+n <- 100
+eps <- 1/100 
+succ <- numeric(0)
+
+for (i in 1:N) {  
+  prawd <- abs((sum(sample(-10:10, n, replace = TRUE))/n - mean(sample(-1:1, n, replace = TRUE))))
+  if (prawd < eps) {
+    succ <- append(succ, 1)
+  }
+}
+
+prawdopodobienstwo <- length(succ)/N
+prawdopodobienstwo
+
+```
+
+
+1c
+
+
+```{r}
+N <- 10^4
+n <- 100
+eps <- 1/100 
+succ <- numeric(0)
+
+for (i in 1:N) {  
+  prawd <- abs((sum(sample(-100:100, n, replace = TRUE))/n - mean(sample(-1:1, n, replace = TRUE))))
+  if (prawd < eps) {
+    succ <- append(succ, 1)
+  }
+}
+
+prawdopodobienstwo <- length(succ)/N
+prawdopodobienstwo
+
+```
+
+
+2
+```{r}
+N <- 10^3
+n <- 100
+eps <- 1/100 
+succ <- numeric(0)
+
+funkcja_unif <- function(a) {
+  for (i in 1:N) {  
+    prawd <- abs((sum(runif(n, -a, a)))/n - mean(runif(n, -a, a)))
+    if (prawd < eps) {
+      succ <- append(succ, 1)
+    }
+  }
+  prawdopodobienstwo <- length(succ)/N
+  return(prawdopodobienstwo)
+}
+
+funkcja_unif(1)
+funkcja_unif(1000) 
+
+```
+3.
+
+```{r}
+N <- 10^3
+n <- 100
+eps <- 1/100 
+succ <- numeric(0)
+
+funkcja_norm <- function(sigma) {
+  for (i in 1:N) {  
+    prawd <- abs((sum(rnorm(n, 0, sigma)))/n - mean(rnorm(n, 0, sigma)))
+    if (prawd < eps) {
+      succ <- append(succ, 1)
+    }
+  }
+  prawdopodobienstwo <- length(succ)/N
+  return(prawdopodobienstwo)
+}
+
+funkcja_norm(1)
+
+funkcja_norm(10)
+funkcja_norm(100)
+
+```
+## Zadanie 5.
+
+
+```{r}
+
+N <- 10^3
+n <- 100
+
+succ <- numeric(0)
+
+funkcja_cauchy <- function(eps) {
+  for (i in 1:N) {  
+    prawd <- abs((sum(rcauchy(n)))/n)
+    if (prawd < eps) {
+      succ <- append(succ, 1)
+    }
+  }
+  prawdopodobienstwo <- length(succ)/N
+  return(prawdopodobienstwo)
+}
+
+funkcja_cauchy(1/100)
+funkcja_cauchy(1/10)
+funkcja_cauchy(1)
+
+
+```

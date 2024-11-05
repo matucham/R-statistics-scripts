@@ -1,0 +1,161 @@
+---
+title: "lab7"
+output: html_document
+date: "2024-01-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+1.  Q(ROZKLAD) - W TYM PRZYKLADZIE QLOGIS JEST FUNKCJA ODWROTNA DO DYSTRYBUANTY LOGISTYCZNEJ W R
+
+```{r}
+library(VGAM)
+# Ustawienie rozmiaru próby
+n <- 1000
+
+# Generowanie próby z rozkładu jednostajnego U(0,1)
+uniform_sample <- runif(n)
+
+# Przekształcenie próby na rozkład logistyczny przy użyciu odwrotnej dystrybuanty
+logistic_sample <- qlogis(uniform_sample)
+
+# Rysowanie histogramu z wygenerowanej próby
+hist(logistic_sample, breaks = seq(min(logistic_sample), max(logistic_sample), length.out = 15+1), freq=FALSE)
+
+# Dodanie krzywej gęstości rozkładu logistycznego
+curve(dlogis(x), from=min(logistic_sample), to=max(logistic_sample), add=TRUE, col='red', lwd=2)
+# Generowanie próby z rozkładu jednostajnego U(0,1)
+uniform_sample <- runif(n)
+
+# Przekształcenie próby na rozkład Rayleigha przy użyciu odwrotnej dystrybuanty
+rayleigh_sample <- qrayleigh(uniform_sample)
+
+# Rysowanie histogramu z wygenerowanej próby
+hist(rayleigh_sample, breaks = seq(min(rayleigh_sample), max(rayleigh_sample), length.out = 30+1), freq=FALSE, col='yellow')
+
+# Dodanie krzywej gęstości rozkładu Rayleigha
+curve(drayleigh(x), from=min(rayleigh_sample), to=max(rayleigh_sample), add=TRUE, col='green', lwd=2)
+# Generowanie próby z rozkładu jednostajnego U(0,1)
+u <- runif(1e6, 0, 1)
+
+# Przekształcenie próby na rozkład wykładniczy przy użyciu odwrotnej dystrybuanty
+w <- -log(u)
+
+# Rysowanie histogramu z wygenerowanej próby
+hist(w, breaks = seq(min(w), max(w), length.out = 30+1), freq=FALSE, col='pink')
+
+# Dodanie krzywej gęstości rozkładu wykładniczego
+curve(dexp(x, 1), from=min(w), to=max(w), add=TRUE, col='black', lwd=2)
+
+
+```
+
+Rozklad wykladniczy
+
+## Zadanie 2
+1.
+```{r}
+# Ustawienie parametru lambda
+lambda <- 1
+
+# Liczba realizacji zmiennych losowych N
+n <- 1e3
+
+# Inicjalizacja wektora do przechowywania wartości N
+N <- numeric(n)
+
+# Symulacja realizacji zmiennych losowych N
+for(i in 1:n){
+  # Znajdowanie indeksu, gdzie suma przekracza 1
+  N[i] <- which(cumsum(rexp(n)) > 1)[1]
+}
+
+# Rysowanie histogramu
+hist(N, breaks = seq(min(N), max(N), length.out = 30+1), freq=FALSE, col='skyblue')
+
+```
+
+2.
+```{r}
+# Ustawienie liczby realizacji zmiennych losowych N
+n <- 1e3
+
+# Inicjalizacja wektora do przechowywania wartości N
+N <- numeric(n)
+
+# Ustawienie parametru lambda
+lambda <- 1
+
+# Symulacja realizacji zmiennych losowych N
+for(i in 1:n){
+  # Znajdowanie indeksu, gdzie iloczyn przekracza exp(-lambda)
+  N[i] <- which(cumprod(runif(n)) < exp(-lambda))[1]
+}
+
+# Rysowanie histogramu
+hist(N, breaks = seq(min(N), max(N), length.out = 30+1), freq=FALSE, col='orange')
+
+
+```
+## Zadanie 3.
+subset() - wzięcie częsci wektora z całego wektora(podzbior)
+
+```{r}
+# Generowanie próby z rozkładu jednostajnego U(-pi/2, pi/2)
+U <- runif(1000, -pi/2, pi/2)
+
+# Przekształcenie próby z rozkładu jednostajnego za pomocą funkcji tan
+X <- tan(U)
+
+# Wybranie wartości z zakresu [-12, 12] (ograniczenie dla lepszego zobrazowania)
+subset_X <- subset(X, X >= -12 & X <= 12)
+
+# Narysowanie histogramu wybranej próby
+hist(subset_X, breaks = seq(-12, 12, length.out = 20), freq = FALSE,
+     main = 'Histogram próby z rozkładu Cauchy\'ego', xlab = 'Wartości zmiennej X')
+
+# Dodanie krzywej gęstości rozkładu Cauchy'ego
+curve(dcauchy(x), add = TRUE, col = 'red', lwd = 2)
+
+```
+## Zadanie 4.
+2.
+
+```{r}
+# Liczba próbek
+n <- 1000
+
+# Możliwe wartości zmiennej losowej S
+S <- c(-1, 2, 4)
+
+# Prawdopodobieństwa dla poszczególnych wartości
+prawdopodobienstwa <- c(1/6, 2/3, 1/6)
+
+# Obliczenie dystrybuanty
+dystrybuanta <- cumsum(prawdopodobienstwa)
+
+# Inicjalizacja wektora na zmienne losowe
+X <- c()
+
+# Generowanie próbki z rozkładu dyskretnego
+for (i in seq(1, n)) {
+  # Generowanie liczby losowej z rozkładu jednostajnego
+  U <- runif(1, 0, 1)
+  
+  # Porównywanie z dystrybuantą i przypisywanie odpowiedniej wartości
+  for (j in 1:length(dystrybuanta)) {
+    if (U <= dystrybuanta[j]) {
+      X <- c(X, S[j])
+      break
+    }
+  }
+}
+
+# Tabela częstości występowania poszczególnych wartości
+table(X) / n
+
+```

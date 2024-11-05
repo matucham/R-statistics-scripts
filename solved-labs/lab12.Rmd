@@ -1,0 +1,69 @@
+1 Wykres gestosci łacznej dwuwymiarowego rozkładu normalnego
+```{r}
+rys <- function(a,b,c,d){
+  x<-c(a,b)
+  y<-c(c,d)
+  f<-function(x,y){x*y}
+  z<-outer(x,y,f)
+  persp(x, y, z, theta = 40, phi = 20, expand = 0.7, col = "lightblue")
+}
+rys(1,4,3,4)
+```
+
+4 Sploty
+
+convolve bierze dwa wektory x i y i oblicza ich splot. Zmienna splot zawiera sumy iloczynów elementów wektorów
+```{r}
+# Generowanie próbek z rozkładów Poissona
+x <- rpois(10^3, 2)
+y <- rpois(10^3, 3)
+
+# Splot dwóch próbek
+splot <- convolve(x, y)
+
+# Funkcja do obliczania dystrybuanty
+ecdf_splot <- ecdf(splot)
+
+# Histogramy dla x, y i splotu
+hist(x, main = "Histogram dla x", xlab = "Wartości", col = "lightblue")
+hist(y, main = "Histogram dla y", xlab = "Wartości", col = "lightgreen")
+hist(splot, main = "Histogram dla splotu", xlab = "Wartości", col = "pink")
+
+# Wykres dystrybuanty splotu
+plot(ecdf_splot, col = "blue", lwd = 2,
+     xlab = "t", ylab = "Dystrybuanta", main = "Empiryczna dystrybuanta splotu")
+
+```
+```{r}
+x <- runif(10^3)
+y <- runif(10^3)
+splot <- convolve(x, y)
+
+# Funkcja do obliczania dystrybuanty
+ecdf_splot <- ecdf(splot)
+
+# Histogramy dla x, y i splotu
+hist(x, main = "Histogram dla x", xlab = "Wartości", col = "lightblue")
+hist(y, main = "Histogram dla y", xlab = "Wartości", col = "lightgreen")
+hist(splot, main = "Histogram dla splotu", xlab = "Wartości", col = "pink")
+
+# Wykres empirycznej dystrybuanty splotu
+plot(ecdf_splot, col = "blue", lwd = 2,
+     xlab = "t", ylab = "Dystrybuanta", main = "Empiryczna dystrybuanta splotu")
+
+```
+Test funkcji ecdf
+```{r}
+
+x <- c(1, 2, 3, 3, 4, 5)
+ecdf_x <- ecdf(x)
+
+# Wartość dystrybuanty dla punktu 3
+p <- ecdf_x(3)
+print(p)
+
+# Wykres dystrybuanty
+plot(ecdf_x)
+
+
+```

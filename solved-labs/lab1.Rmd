@@ -1,0 +1,245 @@
+---
+title: "lab1"
+output: pdf_document
+date: "2024-01-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+```{r}
+# Punkt 1: Symulacja 10 rzutów monetą
+ex1 <- sample(c("O", "R"), 10, replace = TRUE)
+ex1
+
+# Punkt 2: Kolejna symulacja dla sprawdzenia losowości
+ex1_2 <- sample(c("O", "R"), 10, replace = TRUE)
+ex1_2
+
+# Punkt 3: Estymacja prawdopodobieństwa reszki
+estimateC <- (sum(ex1 == "R") + sum(ex1_2 == "R")) / (length(ex1) + length(ex1_2))
+estimateC
+# Estymacja prawdopodobieństwa reszki została obliczona jako suma liczby reszek w obu próbkach podzielona przez sumę wszystkich rzutów.
+
+# Punkt 4: Symulacja 100 rzutów
+manyCoins <- sample(c("O", "R"), 100, replace = TRUE)
+manyCoins
+prob <- mean(manyCoins == "R")
+prob
+# Użyto funkcji `mean()` do obliczenia estymacji prawdopodobieństwa reszki w symulacji 100 rzutów.
+
+# Punkt 5: Symulacja miliona rzutów
+milCoins <- sample(c("O", "R"), 1000000, replace = TRUE)
+probofmil <- mean(milCoins == "R")
+probofmil
+# Użyto funkcji `mean()` do obliczenia estymacji prawdopodobieństwa reszki w symulacji miliona rzutów.
+
+```
+
+## Zadanie 2.
+
+```{r}
+# Punkt 1: Symulacja dla monety symetrycznej
+succ <- 0
+trial <- 100
+
+for (i in 1:trial) {
+  # Symulacja trzech rzutów monetą symetryczną
+  ex2 <- sample(c("O", "R"), 3, replace = TRUE)
+  
+  # Sprawdzenie, czy wypadły dokładnie dwa orły
+  if (sum(ex2 == "O") == 2) {
+    succ <- succ + 1
+  }
+}
+
+# Wyestymowane prawdopodobieństwo
+ex2_res <- succ / trial
+ex2_res
+
+# Punkt 2: Symulacja dla monety niesymetrycznej
+succ2 <- 0
+tri2 <- 100
+
+for (i in 1:tri2) {
+  # Symulacja trzech rzutów monetą niesymetryczną
+  ex2_2 <- sample(c("O", "R"), 3, replace = TRUE, prob = c(0.75, 0.25))
+  
+  # Sprawdzenie, czy wypadły dokładnie dwa orły
+  if (sum(ex2_2 == "O") == 2) {
+    succ2 <- succ2 + 1
+  }
+}
+
+# Wyestymowane prawdopodobieństwo
+ex2_2_res <- succ2 / tri2
+ex2_2_res
+
+
+```
+## Zadanie 3
+```{r}
+# Punkt 1: Symulacja dla 5 rzutów symetrycznej monety
+succ3 <- 0
+tri3 <- 100
+
+for (i in 1:tri3) {
+  # Symulacja pięciu rzutów symetryczną monetą
+  ex3 <- sample(c("O", "R"), 5, replace = TRUE)
+  
+  # Sprawdzenie, czy żadne dwa kolejne rzuty nie dadzą jednakowych rezultatów
+  counting <- 0
+  for (j in 1:4) {
+    if (ex3[j] != ex3[j+1]) {
+      counting <- counting + 1
+    }
+  }
+  
+  if (counting == 4) {
+    succ3 <- succ3 + 1
+  }
+}
+
+# Wyestymowane prawdopodobieństwo
+prob3 <- succ3 / tri3
+prob3
+
+#Punkt 2: Symulacja dla 20 rzutów symetrycznej monety
+succ3_2 <- 0
+tri3_2 <- 1000000
+
+for (i in 1:tri3_2) {
+  # Symulacja dwudziestu rzutów symetryczną monetą
+  ex3_2 <- sample(c("O", "R"), 20, replace = TRUE)
+  
+  # Sprawdzenie, czy żadne dwa kolejne rzuty nie dadzą jednakowych rezultatów
+  counting_2 <- 0
+  for (j in 1:19) {
+    if (ex3_2[j] != ex3_2[j+1]) {
+      counting_2 <- counting_2 + 1
+    }
+  }
+  
+  if (counting_2 == 19) {
+    succ3_2 <- succ3_2 + 1
+  }
+}
+
+# Wyestymowane prawdopodobieństwo
+prob3_2 <- succ3_2 / tri3_2
+prob3_2
+
+
+```
+
+## Zadanie 4
+
+```{r}
+
+succ4 <- 0
+tri4 <- 10000
+
+for (i in 1:tri4) {
+  # Symulacja 100 rzutów symetryczną monetą
+  ex4 <- sample(c("O", "R"), 100, replace = TRUE)
+  
+  # Sprawdzenie, czy pierwszy orzeł pojawi się w rzucie o numerze parzystym
+  if (which(ex4 == "O")[1] %% 2 == 0) {
+    succ4 <- succ4 + 1
+  }
+}
+
+# Wyestymowane prawdopodobieństwo
+prob4 <- succ4 / tri4
+prob4
+
+```
+
+
+
+## Zadanie 5
+
+
+
+```{r}
+# Punkt 1: Funkcja urodziny(k) oblicza teoretyczne prawdopodobieństwo, że wśród k osób co najmniej dwie mają urodziny w tym samym dniu roku.
+urodziny <- function(k) {
+  if (k > 365) {
+    return(1)  # Dla k > 365, prawdopodobieństwo jest równe 1
+  }
+  
+  p <- 1
+  for (i in 0:(k-1)) {
+    p <- p * (365 - i) / 365
+  }
+  return(1 - p)
+}
+
+# Punkt 2: Rysowanie wykresu
+k_values <- 0:100
+probabilities <- numeric(length(k_values))
+
+for (i in 1:length(k_values)) {
+  probabilities[i] <- urodziny(k_values[i])
+}
+
+plot(k_values, probabilities, type="l", col="blue",
+     xlab="Liczba osób (k)", ylab="Prawdopodobieństwo",
+     main="Prawdopodobieństwo co najmniej dwóch osób z tą samą datą urodzenia")
+abline(h=0.5, col="red", lty=2)  # Linia pozioma dla prawdopodobieństwa 1/2
+
+# Punkt 3: Symulacja oszacowująca wartość prawdopodobieństwa, że wśród 23 osób co najmniej dwie mają urodziny w tym samym dniu roku
+sumowanie <- 0
+for (i in 1:100) {
+  sumowanie <- sumowanie + urodziny(23)
+}
+wynik <- sumowanie / 100
+wynik
+
+```
+
+## Zadanie 6
+
+```{r}
+# Punkt 1: Przeprowadzenie symulacji dla n = 100
+succ6 <- 0
+for (j in 1:100) {
+  # Przypisanie numerów od 1 do 100 do kart w talii
+  przypisanieNumerow <- sample(c(1:100), 100, replace = FALSE)
+  
+  # Porównanie numerów kart z ich rzeczywistym położeniem
+  for (i in 1:100) {
+    if (i == match(i, przypisanieNumerow)) {
+      succ6 <- succ6 + 1
+      break
+    }
+  }
+}
+
+# Wyestymowane prawdopodobieństwo wygranej gry
+win <- succ6 / 100
+win
+
+# Punkt 2: Powtórzenie symulacji 1000 razy
+succ6 <- 0
+for (j in 1:1000) {
+  # Przypisanie numerów od 1 do 100 do kart w talii
+  przypisanieNumerow <- sample(c(1:100), 100, replace = FALSE)
+  
+  # Porównanie numerów kart z ich rzeczywistym położeniem
+  for (i in 1:100) {
+    if (i == match(i, przypisanieNumerow)) {
+      succ6 <- succ6 + 1
+      break
+    }
+  }
+}
+
+# Wyestymowane prawdopodobieństwo wygranej gry
+win <- succ6 / 1000
+win
+```
+

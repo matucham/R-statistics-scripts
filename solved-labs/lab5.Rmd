@@ -1,0 +1,96 @@
+---
+title: "lab5"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-01-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+```{r}
+# Parametry rozkładów wykładniczych
+lambdas <- c(0.5, 1.0, 1.5)  
+
+# Liczba symulacji
+num_simulations <- 100000
+
+# Inicjalizacja wektorów na wyniki
+min_values <- numeric(num_simulations)
+min_indices <- numeric(num_simulations)
+
+# Pętla wykonująca symulację
+for (i in 1:num_simulations) {
+  # Generowanie zmiennych losowych o rozkładach wykładniczych
+  random_variables <- rexp(length(lambdas), rate = lambdas)
+  
+  # Zapisanie wartości minimum i indeksu najmniejszej wartości
+  min_values[i] <- min(random_variables)
+  min_indices[i] <- which.min(random_variables)
+}
+
+# Punkt 1: Obliczenia dotyczące rozkładu minimum
+empirical_mean_M <- mean(min_values)  
+theoretical_mean_M <- 1 / sum(lambdas)  
+
+# Punkt 2: Obliczenia dotyczące rozkładu prawdopodobieństwa, że M jest równe Xk
+empirical_probabilities <- tabulate(min_indices) / num_simulations  
+theoretical_probabilities <- lambdas / sum(lambdas)  
+
+# Wyniki
+results <- list(
+  empirical_mean_M = empirical_mean_M,
+  theoretical_mean_M = theoretical_mean_M,
+  empirical_probabilities = empirical_probabilities,
+  theoretical_probabilities = theoretical_probabilities
+)
+
+# Wyświetlenie wyników
+print(results)
+
+
+
+```
+
+## Zadanie 2.
+
+```{r}
+# Liczba próbek
+n <- 10^3
+
+# Generowanie niezależnych zmiennych losowych z rozkładu wykładniczego
+zmienne <- rexp(n, 0.5)
+
+# Funkcja realizująca proces Poissona
+simpois <- function(t){
+  # Inicjalizacja ciągu, pierwszy element to 0
+  ciag <- c(0)
+  
+  # Pętla generująca kolejne elementy ciągu Poissona
+  for (i in 1:n){
+    # Dodanie kolejnej wartości zmiennych losowych do ciągu
+    ciag <- append(ciag, (ciag[i] + zmienne[i]))
+    
+    # Sprawdzenie, czy osiągnieto moment czasu t
+    if (ciag[i+1] > t) return (i-1)
+    # Zwrócenie (i-1), ponieważ trzeba zwrócić liczbę wydarzeń do chwili t
+  }
+  return(0)  # Jeżeli t > sum(zmienne), zwrócenie 0 (brak wydarzeń)
+}
+
+
+# Symulacja trajektorii procesu Poissona dla t z przedziału [0, 20]
+t_values <- seq(0, 20, by = 0.1)
+function_values <- sapply(t_values, simpois)
+
+# Wykres uzyskanej trajektorii
+plot(t_values, function_values, type = "l", col = "blue", lwd = 2,
+     xlab = "t", ylab = "N(t)", main = "Proces Poissona")
+
+
+```
+

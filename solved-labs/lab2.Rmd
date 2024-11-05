@@ -1,0 +1,169 @@
+---
+title: "lab2"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-01-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+```{r}
+
+suc <- 0
+trial <- 10000  
+
+for (i in 1:trial) {
+  # Symulacja dziesięciu rzutów kostką
+  rzuty <- sample(1:6, 10, replace = TRUE)
+  
+  # Sprawdzenie, czy co najmniej jedna szóstka nie występuje
+  if (!all(1:6 %in% rzuty)) {
+    suc <- suc + 1
+  }
+}
+
+# Obliczenie prawdopodobieństwa
+prawdo <- suc / trial
+prawdo
+
+```
+
+## Zadanie 2.
+
+```{r}
+
+# Generowanie histogramów prób z rozkładu jednostajnego na [0, 1]
+for (i in seq(10, 50, 10)) {
+  # Generowanie próby z rozkładu jednostajnego
+  wektor <- runif(i)
+  
+  # Rysowanie histogramu
+  hist(wektor, breaks = seq(min(wektor), max(wektor), length.out = 10+1))
+}
+
+```
+
+
+```{r}
+# Prawdopodobieństwo, że Asia i Basia się spotkają
+succ <- 0
+tr <- 100
+
+for (i in 1:tr) {
+  # Generowanie dwóch niezależnych zmiennych losowych z rozkładu jednostajnego na [0, 1]
+  asia_arrival <- runif(1)
+  basia_arrival <- runif(1)
+  
+  # Sprawdzenie warunku spotkania
+  if (asia_arrival - basia_arrival <= 0.25 && asia_arrival - basia_arrival >= -0.25) {
+    succ <- succ + 1
+  }
+}
+
+# Liczba udanych spotkań
+succ
+# Prawdopodobieństwo spotkania
+pro <- succ / tr
+pro
+
+```
+
+
+## Zadanie 3.
+
+```{r}
+# Punkt 1: Symulacja rzutów zwykłą kostką do gry
+n <- 1e3
+czworki <- (sample(1:6, n, replace = TRUE) == 4)
+frakcje <- cumsum(czworki) / (1:n)
+plot(frakcje, type = "l")
+abline(h = 1/6, col = "blue")
+
+```
+
+
+```{r}
+# Punkt 2: Symulacja rzutów kostką, na której czwórka wypada z prawdopodobieństwem 10^(-3)
+n <- 1e4
+p <- 1/1000
+q <- (1 - p) / 5
+czworki <- (sample(1:6, n, replace = TRUE, prob = c(q, q, q, p, q, q)) == 4)
+frakcje <- cumsum(czworki) / (1:n)
+plot(frakcje, type = "l")
+abline(h = p, col = "blue")
+
+```
+
+
+
+# Zadanie 4.
+
+
+```{r}
+# Punkt 1: Symulacja prawdopodobieństwa, że wśród k = 25 osób co najmniej dwie mają urodziny w tym samym dniu roku
+birth <- function(k, p) {
+  ur <- sample(1:365, k, replace = TRUE, prob = p)
+  tab = tabulate(ur)
+  
+  # Sprawdzenie, czy co najmniej dwie osoby mają urodziny w tym samym dniu roku
+  length(tab[tab > 1]) > 0
+}
+
+p_ur <- function(k, p) {
+  samp = replicate(10000, birth(k, p))
+  sum(samp) / length(samp)
+}
+
+# Prawdopodobieństwo w sytuacji, gdzie dla 65 dni prawdopodobieństwo jest trzykrotnie większe niż dla pozostałych 300 dni
+prawd <- append(replicate(65, 3), replicate(300, 1))
+p_ur(25, prawd)
+
+
+```
+
+
+
+```{r}
+# Punkt 2: Symulacja najmniejszej liczby osób k, dla której prawdopodobieństwo co najmniej dwóch osób ma urodziny w tym samym dniu roku wynosi co najmniej 1/2
+pon <- replicate(52, 1165)
+wt <- replicate(52, 1267)
+sr <- replicate(52, 1227)
+cz <- replicate(52, 1239)
+piat <- replicate(52, 1199)
+sob <- replicate(52, 832)
+niedz <- replicate(53, 785)
+prawd1 <- c(pon, wt, sr, cz, piat, sob, niedz)
+p_ur(23, p = prawd1)
+
+```
+
+
+## Zadanie 5.
+
+```{r}
+
+
+liczba_osob <- 1000000
+liczba_chorych <- liczba_osob / 1000
+liczba_zdrowych <- liczba_osob - liczba_chorych
+
+# Generowanie stanu zdrowia (1 - chory, 0 - zdrowy)
+stan_zdrowia <- c(rep(1, liczba_chorych), rep(0, liczba_zdrowych))
+
+# Symulacja wyników testów pozytywnych
+wyniki_testow <- ifelse(stan_zdrowia == 1, rbinom(liczba_chorych, 1, 0.95), rbinom(liczba_zdrowych, 1, 0.05))
+
+# Policzenie: słusznie pozytywne i fałszywie pozytywne wyniki
+slusznie_pozytywne <- sum(wyniki_testow[stan_zdrowia == 1])
+falszywie_pozytywne <- sum(wyniki_testow[stan_zdrowia == 0])
+
+# Obliczenie prawdopodobieństwa
+prawdopodobienstwo_faktycznie_chory <- slusznie_pozytywne / (slusznie_pozytywne + falszywie_pozytywne)
+
+prawdopodobienstwo_faktycznie_chory
+```

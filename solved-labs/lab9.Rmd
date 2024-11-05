@@ -1,0 +1,199 @@
+---
+title: "lab9"
+output: html_document
+date: "2024-01-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1.
+
+
+```{r}
+rysowanie <- function(){
+  x <- seq(-4, 4, length = 1000)
+  y <- dnorm(x)
+  plot(x, y, axes = TRUE, type = "l",
+       xlab = '', ylab = '')
+  abline(h = 0)
+  
+  # Od lewego kranca do lewego kwartyla
+  x1 <- x[x <= qnorm(0.25, mean(x))]
+  y1 <- dnorm(x1)
+  x2 <- c(-4, x1, x1[length(x1)], -4)
+  y2 <- c(0, y1, 0, 0)
+  polygon(x2, y2, col = 'grey90')
+  
+  # Od lewego kwartyla do mediany
+  x3 <- x[(x > qnorm(0.25, mean(x))) & (x <= qnorm(0.5, mean(x)))]
+  y3 <- dnorm(x3)
+  x4 <- c(qnorm(0.25, mean(x)), x3, x3[length(x3)], qnorm(0.5, mean(x)))
+  y4 <- c(0, y3, 0, 0)
+  polygon(x4, y4, col = 'skyblue')
+
+  #od mediany do górnego kwartyla
+  x5 <- x[(x > qnorm(0.5, mean(x))) & (x <= qnorm(0.75, mean(x)))]
+  y5 <- dnorm(x5)
+  x6 <- c(qnorm(0.5, mean(x)), x5, x5[length(x5)], qnorm(0.75, mean(x)))
+  y6 <- c(0, y5, 0, 0)
+  polygon(x6, y6, col = 'orange')
+  
+  #od górnego kwartyla do końca
+  x7 <- x[(x > qnorm(0.75, mean(x))) & (x <= qnorm(1, mean(x)))]
+  y7 <- dnorm(x7)
+  x8 <- c(qnorm(0.75, mean(x)),  x7, x7[length(x7)], qnorm(1, mean(x)))
+  y8 <- c(0, y7, 0, 0)
+  polygon(x8, y8, col = 'yellow')
+  
+  # Osie i etykiety
+  axis(1, at = c(-1, 1), labels = c('-1', '1'))
+}
+
+rysowanie()
+
+
+#rozklad jednostajny
+
+rysowanie <- function(){
+  x <- seq(-0.5, 1.5, length = 1000)
+  y <- dunif(x)
+  plot(x, y, axes = TRUE, type = "l",
+       xlab = '', ylab = '')
+  abline(h = 0)
+  
+  # Od lewego kranca do lewego kwartyla
+  x1 <- x[x <= qunif(0.25)]
+  y1 <- dunif(x1)
+  x2 <- c(-4, x1, x1[length(x1)], -4)
+  y2 <- c(0, y1, 0, 0)
+  polygon(x2, y2, col = 'grey90')
+  
+  # Od lewego kwartyla do mediany
+  x3 <- x[(x > qunif(0.25)) & (x <= qunif(0.5))]
+  y3 <- dunif(x3)
+  x4 <- c(qunif(0.25), x3, x3[length(x3)], (0.5))
+  y4 <- c(0, y3, 0, 0)
+  polygon(x4, y4, col = 'skyblue')
+
+  #od mediany do górnego kwartyla
+  x5 <- x[(x > qunif(0.5)) & (x <= qunif(0.75))]
+  y5 <- dunif(x5)
+  x6 <- c(qunif(0.5), x5, x5[length(x5)], qunif(0.75))
+  y6 <- c(0, y5, 0, 0)
+  polygon(x6, y6, col = 'orange')
+  
+  #od górnego kwartyla do końca
+  x7 <- x[(x > qunif(0.75)) & (x <= qnorm(1))]
+  y7 <- dunif(x7)
+  x8 <- c(qunif(0.75),  x7, x7[length(x7)], qunif(1))
+  y8 <- c(0, y7, 0, 0)
+  polygon(x8, y8, col = 'yellow')
+  
+  # Osie i etykiety
+  axis(1, at = c(-1, 1), labels = c('-1', '1'))
+}
+
+rysowanie()
+
+
+rysowanie <- function(dfunkcja, qfunkcja, skala) {
+  x <- seq(-skala, skala, length = 1000)
+  y <- dfunkcja(x)
+  plot(x, y, axes = TRUE, type = "l",
+       xlab = '', ylab = '')
+  abline(h = 0)
+  
+  # Od lewego kranca do lewego kwartyla
+  x1 <- x[x <= qfunkcja(0.25)]
+  y1 <- dfunkcja(x1)
+  x2 <- c(-skala, x1, x1[length(x1)], -skala)
+  y2 <- c(0, y1, 0, 0)
+  polygon(x2, y2, col = 'grey90')
+  
+  # Od lewego kwartyla do mediany
+  x3 <- x[(x > qfunkcja(0.25)) & (x <= qfunkcja(0.5))]
+  y3 <- dfunkcja(x3)
+  x4 <- c(qfunkcja(0.25), x3, x3[length(x3)], qfunkcja(0.5))
+  y4 <- c(0, y3, 0, 0)
+  polygon(x4, y4, col = 'skyblue')
+
+  # Od mediany do górnego kwartyla
+  x5 <- x[(x > qfunkcja(0.5)) & (x <= qfunkcja(0.75))]
+  y5 <- dfunkcja(x5)
+  x6 <- c(qfunkcja(0.5), x5, x5[length(x5)], qfunkcja(0.75))
+  y6 <- c(0, y5, 0, 0)
+  polygon(x6, y6, col = 'orange')
+  
+  # Od górnego kwartyla do końca
+  x7 <- x[(x > qfunkcja(0.75)) & (x <= qfunkcja(1))]
+  y7 <- dfunkcja(x7)
+  x8 <- c(qfunkcja(0.75),  x7, x7[length(x7)], qfunkcja(1))
+  y8 <- c(0, y7, 0, 0)
+  polygon(x8, y8, col = 'yellow')
+  
+  # Osie i etykiety
+  axis(1, at = c(-1, 1), labels = c('-1', '1'))
+}
+
+# Wywołanie dla różnych rozkładów
+rysowanie(dnorm, qnorm, 4)  # Normalny
+rysowanie(dunif, qunif, 1.5)  # Jednostajny
+rysowanie(dexp, qexp, 4)  # Wykładniczy
+rysowanie(dlaplace, qlaplace, 4)  # Laplace'a
+rysowanie(dlogis, qlogis, 4)  # Logistyczny
+rysowanie(drayleigh, qrayleigh, 4)  # Rayleigha
+rysowanie(dcauchy, qcauchy, 4)  # Cauchy
+
+```
+
+## Zadanie 2.
+
+Zadanie o wlasciwosci macierzy przeksztalcenia afinicznego(stad wzory na przeksztalcenia przez obrot)
+```{r}
+#kordy próby
+n <- 1e3
+x_cord <- runif(n, -1, 1)
+y_cord <- runif(n, -1, 1)
+Z <- c(x_cord, y_cord)
+dZ <- data.frame(matrix(unlist(Z), nrow=n, byrow=T))
+
+plot(x_cord, y_cord, col = "blue")
+
+
+#obrot o theta
+theta <- pi/5
+rotated_x <- x * cos(theta) - y * sin(theta)
+rotated_y <- x * sin(theta) + y * cos(theta)
+
+plot(rotated_x, rotated_y, col = "pink")
+
+
+```
+## Zadanie 3.
+
+```{r}
+n <- 1e3
+x <- runif(n, -1, 1)
+y <- numeric(n)
+for(i in 1:n){
+  y[i] <- runif(1, -1 + abs(x[i]), 1 - abs(x[i]))
+}
+
+plot(x,y)
+
+```
+1. Czy punkty (xi, yi), i = 1, . . . , n są jednostajnie rozłożone na zbiorze D?
+Nie, punkty (xi, yi) nie są jednostajnie rozłożone na obszarze D. Zaznaczona przestrzeń nie przypomina kwadratu 
+
+
+2. Odpowiednio ograniczając przestrzeń występowania elementów.
+
+```{r}
+
+
+
+
+
+```

@@ -1,0 +1,138 @@
+##Zadanie 1
+
+1 Wartosci oczekiwane funkcji od wektora losowego rozłozonego jednostajnie na kole jednostkowym
+```{r}
+liczba_punktow <- 4000
+
+x <- runif(liczba_punktow, min = -1, max = 1)
+y <- runif(liczba_punktow, min = -1, max = 1)
+
+wewnatrz_kola <- x^2 + y^2 <= 1
+x <- x[wewnatrz_kola]
+y <- y[wewnatrz_kola]
+{
+  plot(x, y, col = "blue", main = "Losowe punkty w kole jednostkowym")
+  abline(h=0)
+  abline(v=0)
+  print(mean(abs(x*y)))
+}
+```
+
+# Zadanie 2
+2 Metoda eliminacji dla generowania zmiennych losowych o rozkładzie z zadana gestoscia
+
+```{r}
+eliminacja <- function(f, a, b){
+  x <- c()
+  while(length(x) < 10^4){
+    u1 <- runif(1, a, b)
+    u2 <- runif(1, 0, 2)
+    if (u2 <= eval(f)){
+      x <- append(x, u1)
+    }
+  }
+  return (x)
+}
+
+gestosc <- expression(2/pi*sqrt(1-u1^2))
+rozklad <- eliminacja(gestosc, -1, 1)
+hist(rozklad)
+```
+```{r}
+gestosc <- expression(1-abs(u1))
+rozklad <- eliminacja(gestosc, -1, 1)
+hist(rozklad)
+```
+
+## Zadanie 3.
+3 Inny wariant metody eliminacji
+```{r}
+
+n <- 10000
+c <- 5
+func1 <- function(x,y){
+  4*x*y
+}
+#rozkład jednostajny [0,1]
+gf <- function(x,y){
+  return(1)
+}
+
+Z <- matrix(ncol = 2, nrow = 0)
+for ( i in 1:n){
+  X <- runif(1,0,1)
+  Y <- runif(1,0,1)
+  U <- runif(1,0,1)
+  if(c*U*gf(X,Y) <= func1(X,Y)){
+    Z <- rbind(Z, c(X,Y))
+  }
+}
+
+
+h2 <- plot(Z[,1],Z[,2])
+
+#P(X,Y) nalezy do [0,1/2]^2
+
+Z_count <- 0
+for (i in seq(1,length(Z)/2)){
+  if(Z[i,1] <= 1/2 & Z[i,2] <= 1/2){
+    Z_count <- Z_count + 1
+  }
+}
+Z_count/length(Z)
+
+# EXY
+sum <- 0
+for (i in seq(1,length(Z)/2)){
+  sum <- sum + Z[i,1]*Z[i,2]
+}
+sum/(length(Z)/2)
+```
+
+# Zadanie 4.
+4 Metoda rozkladow warunkowych
+```{r}
+# Zadanie 4: Metoda rozkładów warunkowych
+
+# Liczba próbek
+n <- 10000
+
+# Funkcja gestości brzegowej fY|X(y|x) dla danego x
+fYgivenX <- function(x, y) {
+  return(1 / (2 * sqrt(1 - x^2)))
+}
+
+# Funkcja gestości brzegowej fX(x)
+f <- function(x) {
+  return(2 * sqrt(1 - x^2) / pi)
+}
+
+# Przedział generacji zmiennych X
+a <- -1
+b <- 1
+
+# Generacja próbki z rozkładu jednostajnego na kole jednostkowym w R^2
+X <- c()  
+Y <- c()  
+
+# Pętla generująca próbkę
+for (i in seq(1, n)) {
+  # Generacja X z rozkładu brzegowego fX(x)
+  U1 <- runif(1, a, b)
+  U2 <- runif(1, 0, 2)
+
+  # Sprawdzenie warunku fX(x) * fY|X(y|x)
+  if (U2 <= fYgivenX(U1, 0)) {
+    X <- c(X, U1)
+    # Generacja Y z rozkładu warunkowego fY|X(y|x)
+    Y <- c(Y, runif(1, -sqrt(1 - U1^2), sqrt(1 - U1^2)))
+  }
+}
+
+# Wykres
+plot(X, Y, pch = ".", col = "blue", xlab = "X", ylab = "Y",
+     main = "Generacja próby z rozkładu jednostajnego na kole jednostkowym")
+
+```
+
+
